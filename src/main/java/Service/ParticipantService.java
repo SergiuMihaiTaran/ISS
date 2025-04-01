@@ -4,26 +4,39 @@ import Domain.Competition;
 import Domain.Participant;
 import Repository.ParticipantsRepository;
 import Repository.RepositoryInterface;
+import Repository.RepositoryParticipantInterface;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ParticipantService extends ServiceInterface<Integer,Participant> {
-    public ParticipantService(ParticipantsRepository repo) {
-        super(repo);
+public class ParticipantService {
+    private RepositoryParticipantInterface<Integer,Participant,Competition> repo;
+    public ParticipantService(RepositoryParticipantInterface<Integer,Participant,Competition> repo) {
+        this.repo = repo;
+    }
+    public Participant findOne(int id) {
+        return repo.findOne(id);
     }
 
+    public List<Participant> findAll() {
+        return  repo.findAll();
+    }
+
+    public void save(Participant entity) {
+        repo.save(entity);
+    }
+
+    public Participant update(Participant entity, Participant newEntity) {
+        return  repo.update(entity,newEntity);
+    }
+
+    public Participant delete(int id) {
+        return  repo.delete(id);
+    }
     public List<Participant> getParticipantsInCompetition(Competition competition) {
-        ArrayList<Participant> participants = new ArrayList<>();
-        for(Participant participant:findAll()){
-            for(Competition comp:participant.getCompetitions()){
-                if(comp.getId().equals(competition.getId())){
-                    participants.add(participant);
-                }
-            }
-        }
-        return participants;
+
+        return repo.getParticipantsInCompetition(competition);
     }
 
 }

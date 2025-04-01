@@ -220,4 +220,33 @@ public class ParticipantsRepository implements RepositoryParticipantInterface<In
         logger.traceExit();
         return null;
     }
+    public List<Participant> getParticipantsInCompetition(Competition competition) {
+        int compID=competition.getId();
+        logger.info("Getting participants for competition {}", compID);
+        Connection conn = dbUtils.getConnection();
+        List<Participant> participants = new ArrayList<>();
+        try (PreparedStatement preStmt = conn.prepareStatement(
+
+                "SELECT p.id,p.name,p.age FROM Participant p " +
+                        "INNER JOIN ParticipantCompetitions pc ON p.id = pc.id_participant " +
+                        "WHERE pc.id_competition = ?")) {
+            preStmt.setInt(1, compID);
+            try (ResultSet result = preStmt.executeQuery()) {
+                while (result.next()) {
+                    int id = result.getInt("id");
+                    String name = result.getString("name");
+                    int age = result.getInt("age");
+                    Participant participant= new Participant(name,age,getComposition(id));
+                    participant.setId(id);
+                    participants.add(participant);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            System.err.println("Error fetching competitions: " + e);
+        }
+        logger.traceExit();
+        return participants;
+    }
+
 }

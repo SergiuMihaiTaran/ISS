@@ -1,0 +1,6 @@
+package rpcProtocol;
+
+
+public enum RequestType {
+    LOGIN, LOGOUT, GET_COMPETITION_LIST,GET_PARTICIPANTS_IN_COMPETITION,SAVE_PARTICIPANT;
+}

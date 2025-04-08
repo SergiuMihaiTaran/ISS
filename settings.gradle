@@ -1,2 +1,10 @@
 rootProject.name = 'MPPGUI'
+include 'Client'
+include 'Networking'
+include 'Persistance'
+include 'Server'
+include 'Services'
+include 'Model'
+include 'Persistence'
+include 'Persistence'
 

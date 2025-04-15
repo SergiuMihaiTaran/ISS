@@ -54,7 +54,7 @@ public class ClientRpcWorker implements Runnable, IObserver {
                 logger.error(e.getStackTrace());
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 logger.error(e);
                 logger.error(e.getStackTrace());

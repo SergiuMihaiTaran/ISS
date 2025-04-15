@@ -54,10 +54,11 @@ public class LoginController  {
         User crtUser = new User(name, passwd,"");
 
         try {
+            showMainWindow(crtUser);
             server.login(crtUser,mainWindowController);
 
            // mainWindowController.loadDataCompetitions();
-            showMainWindow(crtUser);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,6 +79,7 @@ public class LoginController  {
 
         //mainWindowController.loadDataCompetitions();
         stage.show();
+        this.setMainController(mainController);
     }
     private void showAlert(String message) {
         // Show alert in case of errors or empty fields

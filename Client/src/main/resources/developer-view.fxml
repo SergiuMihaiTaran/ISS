@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="style.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.developerController">
+    <children>
+        <Label  layoutX="269.0" layoutY="14.0" prefHeight="35.0" prefWidth="61.0" text="Bug list" />
+        <TableView fx:id="bugTable" layoutX="89.0" layoutY="82.0" prefHeight="200.0" prefWidth="398.0">
+            <columns>
+                <TableColumn fx:id="Id" text="ID" />
+                <TableColumn fx:id="name" prefWidth="75.0" text="C1" />
+                <TableColumn fx:id="description" prefWidth="322.40001525878904" text="C2" />
+            </columns>
+        </TableView>
+        <Button onAction="#removeBugClicked" layoutX="244.0" layoutY="321.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="112.0" text="Remove Bug" />
+    </children>
+</AnchorPane>

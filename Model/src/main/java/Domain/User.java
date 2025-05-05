@@ -4,7 +4,7 @@ public class User extends Entity<Integer> {
     private String username;
     private String password;
     private String email;
-
+    private TypeOfEmployee typeOfEmployee;
     public String getUsername() {
         return username;
     }
@@ -29,9 +29,18 @@ public class User extends Entity<Integer> {
         this.email = email;
     }
 
-    public User(String username, String password, String email) {
+    public TypeOfEmployee getTypeOfEmployee() {
+        return typeOfEmployee;
+    }
+
+    public void setTypeOfEmployee(TypeOfEmployee typeOfEmployee) {
+        this.typeOfEmployee = typeOfEmployee;
+    }
+
+    public User(String username, String password, String email, TypeOfEmployee typeOfEmployee) {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.typeOfEmployee = typeOfEmployee;
     }
 }

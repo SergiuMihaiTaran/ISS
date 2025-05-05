@@ -1,6 +1,7 @@
 
 
 
+import Domain.Bug;
 import Domain.Competition;
 import Domain.Participant;
 import Domain.User;
@@ -24,19 +25,17 @@ import java.util.stream.Collectors;
 
 public class ServicesImpl implements IServices {
     private IUserRepository repoUser;
-    private RepositoryParticipantInterface<Integer, Participant, Competition> repoParticipant;
-    private RepositoryInterface<Integer, Competition> repoCompetition;
+    private RepositoryInterface<Integer,Bug> bugRepo;
     private static Logger logger = LogManager.getLogger(ServicesImpl.class);
     private Map<String, IObserver> loggedClients;
 
-    public ServicesImpl(IUserRepository repoUser, RepositoryParticipantInterface<Integer, Participant, Competition> repoParticipant, RepositoryInterface<Integer, Competition> repoCompetition) {
+    public ServicesImpl(IUserRepository repoUser,RepositoryInterface<Integer,Bug> bugRepo){
         this.repoUser = repoUser;
-        this.repoParticipant = repoParticipant;
-        this.repoCompetition = repoCompetition;
+        this.bugRepo = bugRepo;
         loggedClients = new ConcurrentHashMap<>();
     }
     public synchronized void login(User user, IObserver client) throws Exception {
-        User userR=repoUser.searchByNameAndPassword(user.getUsername(), user.getPassword());
+        User userR=repoUser.searchByNameAndPassword(user.getUsername(), user.getPassword(),user.getTypeOfEmployee());
         logger.info(userR.getUsername()+" "+userR.getPassword());
         if (userR!=null){
             if(loggedClients.get(user.getUsername())!=null)
@@ -55,21 +54,7 @@ public class ServicesImpl implements IServices {
             throw new ExceptionInInitializerError("No logged client found.");
     }
 
-    @Override
-    public synchronized List<Competition> getCompetitionsList() {
-        List<Competition> originals = repoCompetition.findAll();
-        List<Competition> copies = new ArrayList<>();
 
-        for (Competition original : originals) {
-            Competition c = new Competition( original.getDistance(),original.getStyle());
-            c.setId(original.getId());
-            copies.add(c);
-        }
-
-        return copies;
-
-
-    }
     private  void notifyListUpdated(){
         ExecutorService executor= Executors.newFixedThreadPool(defaultThreadsNo);
         for(IObserver user:loggedClients.values()){
@@ -85,16 +70,21 @@ public class ServicesImpl implements IServices {
             });
         }
     }
-    @Override
-    public synchronized List<Participant> getParticipantsInCompetition(Competition competition) {
-        return repoParticipant.getParticipantsInCompetition(competition);
 
+    @Override
+    public void saveBug(Bug bug) throws Exception {
+        bugRepo.save(bug);
+        notifyListUpdated();
     }
 
     @Override
-    public synchronized void saveParticipant(Participant participant) throws Exception {
-        repoParticipant.save(participant);
-        notifyListUpdated();
+    public void removeBug(Bug bug) {
+        bugRepo.delete(bug.getId());
+    }
+
+    @Override
+    public List<Bug> getBugsList() throws Exception {
+        return bugRepo.findAll();
     }
 
 }

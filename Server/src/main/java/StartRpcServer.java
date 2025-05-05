@@ -1,4 +1,5 @@
 
+import Domain.Bug;
 import Domain.Competition;
 import Domain.Participant;
 import Repository.*;
@@ -29,9 +30,8 @@ public class StartRpcServer {
             return;
         }
         IUserRepository userRepo=new UsersDBRepository(serverProps);
-        RepositoryParticipantInterface<Integer, Participant, Competition> participantRepo=new ParticipantsRepository(serverProps);
-        RepositoryInterface<Integer,Competition> competitionRepo=new CompetitionsDBRepository(serverProps);
-        IServices chatServerImpl=new ServicesImpl(userRepo,participantRepo,competitionRepo);
+        RepositoryInterface<Integer, Bug> bugRepo=new BugsDBRepository(serverProps);
+        IServices chatServerImpl=new ServicesImpl(userRepo,bugRepo);
         int chatServerPort=defaultPort;
         try {
             chatServerPort = Integer.parseInt(serverProps.getProperty("server.port"));

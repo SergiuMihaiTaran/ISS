@@ -2,8 +2,7 @@ package Repository;
 
 import Domain.Entity;
 import Domain.User;
-
-
+import Domain.TypeOfEmployee;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,46 +10,45 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
 public class UsersDBRepository implements IUserRepository {
 
-        private JdbcUtils dbUtils;
+    private JdbcUtils dbUtils;
+    private static final Logger logger = LogManager.getLogger();
 
+    public UsersDBRepository(Properties props) {
+        logger.info("Initializing UsersDBRepository with properties: {} ", props);
+        dbUtils = new JdbcUtils(props);
+    }
 
-
-        private static final Logger logger= LogManager.getLogger();
-
-        public UsersDBRepository(Properties props) {
-            logger.info("Initializing UsersDBRepository with properties: {} ",props);
-            dbUtils=new JdbcUtils(props);
+    @Override
+    public void save(User elem) {
+        logger.info("Adding User: {}", elem);
+        Connection conn = dbUtils.getConnection();
+        try (PreparedStatement preStmt = conn.prepareStatement("INSERT INTO User(name, password, email, typeOfEmployee) VALUES (?, ?, ?, ?)")) {
+            preStmt.setString(1, elem.getUsername());
+            preStmt.setString(2, elem.getPassword());
+            preStmt.setString(3, elem.getEmail());
+            preStmt.setString(4, elem.getTypeOfEmployee().toString());
+            int result = preStmt.executeUpdate();
+            logger.trace("Saved user: {}", result);
+        } catch (SQLException e) {
+            logger.error(e);
+            System.err.println("Error inserting user: " + e);
         }
-        public
-        @Override
-         void save(User elem) {
-            logger.info("Adding User: {}", elem);
-            Connection conn=dbUtils.getConnection();
-            try(PreparedStatement preStmt= conn.prepareStatement("insert into User( name, password, email) VALUES (?,?,?)")) {
-
-                preStmt.setString(1, elem.getUsername());
-                preStmt.setString(2, elem.getPassword());
-                preStmt.setString(3, elem.getEmail());
-                int result=preStmt.executeUpdate();
-                logger.trace("Saved car: {}", result);
-            } catch (SQLException e) {
-                logger.error(e);
-                System.err.println("Error inserting car"+e);
-            }
-            logger.traceExit();
-        }
+        logger.traceExit();
+    }
 
     @Override
     public User update(User user, User newUser) {
         logger.info("Updating User: {}", user);
         Connection conn = dbUtils.getConnection();
-        try (PreparedStatement preStmt = conn.prepareStatement("UPDATE User SET name = ?, password = ?, email = ? WHERE id = ?")) {
+        try (PreparedStatement preStmt = conn.prepareStatement("UPDATE User SET name = ?, password = ?, email = ?, typeOfEmployee = ? WHERE id = ?")) {
             preStmt.setString(1, newUser.getUsername());
             preStmt.setString(2, newUser.getPassword());
             preStmt.setString(3, newUser.getEmail());
-            preStmt.setInt(4, user.getId());
+            preStmt.setString(4, newUser.getTypeOfEmployee().toString());
+            preStmt.setInt(5, user.getId());
             int result = preStmt.executeUpdate();
             if (result > 0) {
                 logger.trace("User updated successfully");
@@ -85,69 +83,71 @@ public class UsersDBRepository implements IUserRepository {
         logger.traceExit();
         return null;
     }
+
     @Override
     public User findOne(Integer id) {
         logger.traceEntry();
         Connection conn = dbUtils.getConnection();
-        try (PreparedStatement preStmt = conn.prepareStatement("select * from User where id = ?")) {
+        try (PreparedStatement preStmt = conn.prepareStatement("SELECT * FROM User WHERE id = ?")) {
             preStmt.setInt(1, id);
             try (ResultSet result = preStmt.executeQuery()) {
                 if (result.next()) {
-                    int newId = result.getInt(1);
-                    String name = result.getString(2);
-                    String password = result.getString(3);
-                    String email = result.getString(4);
-                    User user=new User(name,password,email);
+                    int newId = result.getInt("id");
+                    String name = result.getString("name");
+                    String password = result.getString("password");
+                    String email = result.getString("email");
+                    String typeStr = result.getString("typeOfEmployee");
+                    TypeOfEmployee type = TypeOfEmployee.valueOf(typeStr);
+
+                    User user = new User(name, password, email, type);
                     user.setId(newId);
                     logger.traceExit();
-
                     return user;
                 }
             }
         } catch (SQLException e) {
             logger.error(e);
-            System.err.println("Error inserting car" + e);
+            System.err.println("Error finding user: " + e);
         }
         logger.traceExit();
-
         return null;
     }
 
     @Override
-        public List<User> findAll() {
-            logger.traceEntry();
-            Connection conn = dbUtils.getConnection();
-            List<User> users = new ArrayList<>();
-            try (PreparedStatement preStmt = conn.prepareStatement("select * from User")) {
-                try (ResultSet result = preStmt.executeQuery()) {
-                    while (result.next()) {
-                        int id = result.getInt(1);
-                        String name = result.getString(2);
-                        String password = result.getString(3);
-                        String email = result.getString(4);
-                        User user=new User(name,password,email);
-                        user.setId(id);
-                        users.add(user);
-                    }
+    public List<User> findAll() {
+        logger.traceEntry();
+        Connection conn = dbUtils.getConnection();
+        List<User> users = new ArrayList<>();
+        try (PreparedStatement preStmt = conn.prepareStatement("SELECT * FROM User")) {
+            try (ResultSet result = preStmt.executeQuery()) {
+                while (result.next()) {
+                    int id = result.getInt("id");
+                    String name = result.getString("name");
+                    String password = result.getString("password");
+                    String email = result.getString("email");
+                    String typeStr = result.getString("typeOfEmployee");
+                    TypeOfEmployee type = TypeOfEmployee.valueOf(typeStr);
+
+                    User user = new User(name, password, email, type);
+                    user.setId(id);
+                    users.add(user);
                 }
-            } catch (SQLException e) {
-                logger.error(e);
-                System.err.println("Error inserting car" + e);
             }
-            logger.traceExit();
-            return users;
+        } catch (SQLException e) {
+            logger.error(e);
+            System.err.println("Error finding users: " + e);
         }
-    public User searchByNameAndPassword(String name, String password) {
-        List<User> users=findAll();
+        logger.traceExit();
+        return users;
+    }
+
+    public User searchByNameAndPassword(String name, String password,TypeOfEmployee typeOfEmployee) {
+        List<User> users = findAll();
         for (User user : users) {
-            if (user.getUsername().equals(name) && user.getPassword().equals(password)) {
+            if (user.getUsername().equals(name) && user.getPassword().equals(password) && user.getTypeOfEmployee().equals(typeOfEmployee)) {
                 return user;
             }
         }
         return null;
     }
-
 }
-
-
-

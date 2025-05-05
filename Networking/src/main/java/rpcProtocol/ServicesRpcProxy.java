@@ -1,7 +1,6 @@
 package rpcProtocol;
 
-import Domain.Competition;
-import Domain.Participant;
+import Domain.Bug;
 import Domain.User;
 import Service.IObserver;
 import Service.IServices;
@@ -68,44 +67,44 @@ public class ServicesRpcProxy implements IServices {
     }
 
     @Override
-    public List<Competition> getCompetitionsList() throws Exception {
-
-        Request req=new Request.Builder().type(RequestType.GET_COMPETITION_LIST).build();
+    public void saveBug(Bug bug) throws Exception {
+        Request req=new Request.Builder().type(RequestType.SAVE_BUG).data(DTOUtils.getDTOb(bug)).build();
         sendRequest(req);
         Response response=readResponse();
         if (response.type()== ResponseType.ERROR){
             String err=response.data().toString();
             throw new Exception(err);
         }
-        List<CompetitionDTO> frDTO=(List<CompetitionDTO>) response.data();
-        List<Competition> competitions= DTOUtils.getFromDTO(frDTO);
+    }
+
+    @Override
+    public void removeBug(Bug bug) throws Exception {
+        Request req=new Request.Builder().type(RequestType.REMOVE_BUG).data(DTOUtils.getDTOb(bug)).build();
+        sendRequest(req);
+        Response response=readResponse();
+        if (response.type()== ResponseType.ERROR){
+            String err=response.data().toString();
+            throw new Exception(err);
+        }
+    }
+
+    @Override
+    public List<Bug> getBugsList() throws Exception {
+
+        Request req=new Request.Builder().type(RequestType.GET_BUG_LIST).build();
+        sendRequest(req);
+        Response response=readResponse();
+        if (response.type()== ResponseType.ERROR){
+            String err=response.data().toString();
+            throw new Exception(err);
+        }
+        List<BugDTO> frDTO=(List<BugDTO>) response.data();
+        List<Bug> competitions= DTOUtils.getFromDTOb(frDTO);
         return competitions;
     }
 
-    @Override
-    public List<Participant> getParticipantsInCompetition(Competition competition) throws Exception {
-        Request req=new Request.Builder().type(RequestType.GET_PARTICIPANTS_IN_COMPETITION).data(DTOUtils.getDTO(competition)).build();
-        sendRequest(req);
-        Response response=readResponse();
-        if (response.type()== ResponseType.ERROR){
-            String err=response.data().toString();
-            throw new Exception(err);
-        }
-        List<ParticipantDTO> frDTO=(List<ParticipantDTO>) response.data();
-        List<Participant> participants = DTOUtils.getFromDTOp(frDTO);
-        return participants;
-    }
 
-    @Override
-    public void saveParticipant(Participant participant) throws Exception {
-        Request req=new Request.Builder().type(RequestType.SAVE_PARTICIPANT).data(DTOUtils.getDTO(participant)).build();
-        sendRequest(req);
-        Response response=readResponse();
-        if (response.type()== ResponseType.ERROR){
-            String err=response.data().toString();
-            throw new Exception(err);
-        }
-    }
+
 
 
 

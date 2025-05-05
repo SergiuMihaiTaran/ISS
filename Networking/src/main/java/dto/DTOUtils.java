@@ -1,8 +1,6 @@
 package dto;
 
-import Domain.Competition;
-import Domain.Participant;
-import Domain.User;
+import Domain.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +9,8 @@ public class DTOUtils {
     public static User getFromDTO(UserDTO usdto){
         String name=usdto.getName();
         String pass=usdto.getPasswd();
-       User user= new User(name, pass,"");
+        TypeOfEmployee typeOfEmployee=usdto.getType();
+       User user= new User(name, pass,"", typeOfEmployee);
 
         return user;
 
@@ -29,7 +28,7 @@ public class DTOUtils {
     public static UserDTO getDTO(User user){
 
         String pass=user.getPassword();
-        return new UserDTO(user.getUsername(), pass);
+        return new UserDTO(user.getUsername(), pass,user.getTypeOfEmployee());
     }
     public static List<CompetitionDTO> getDTO(List<Competition> competitions){
         List<CompetitionDTO> competitionDTOS=new ArrayList<>();
@@ -68,5 +67,30 @@ public class DTOUtils {
             participantDTOS.add(getFromDTO(comp));
         }
         return participantDTOS;
+    }
+    public static Bug getFromDTOb(BugDTO dto) {
+        Bug bug = new Bug(dto.getDescription(), dto.getName());
+        bug.setId(dto.getId());
+        return bug;
+    }
+
+    public static BugDTO getDTOb(Bug bug) {
+        return new BugDTO(bug.getDescription(), bug.getName());
+    }
+
+    public static List<BugDTO> getDTOb(List<Bug> bugs) {
+        List<BugDTO> bugDTOS = new ArrayList<>();
+        for (Bug bug : bugs) {
+            bugDTOS.add(getDTOb(bug));
+        }
+        return bugDTOS;
+    }
+
+    public static List<Bug> getFromDTOb(List<BugDTO> bugDTOS) {
+        List<Bug> bugs = new ArrayList<>();
+        for (BugDTO dto : bugDTOS) {
+            bugs.add(getFromDTOb(dto));
+        }
+        return bugs;
     }
 }

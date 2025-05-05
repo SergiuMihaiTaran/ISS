@@ -1,7 +1,7 @@
 
 
 import GUI.LoginController;
-import GUI.MainWindowController;
+import GUI.developerController;
 import Service.IServices;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -60,13 +60,13 @@ public class StartClient extends Application {
         LoginController ctrl =
                 loader.<LoginController>getController();
         ctrl.setServer(server);
-        FXMLLoader mainLoader = new FXMLLoader(getClass().getClassLoader().getResource("main_window_view.fxml"));
+        FXMLLoader mainLoader = new FXMLLoader(getClass().getClassLoader().getResource("developer-view.fxml"));
         Parent mainRoot = mainLoader.load();
-        MainWindowController mainWindowController=mainLoader.<MainWindowController>getController();
+        developerController mainWindowController=mainLoader.<developerController>getController();
         mainWindowController.setServer(server);
         ctrl.setStage(primaryStage);
         ctrl.setMainController(mainWindowController);
-        MainWindowController mainController = mainLoader.getController();
+        developerController mainController = mainLoader.getController();
         mainController.setServer(server);
 
         primaryStage.setTitle("MPP chat");

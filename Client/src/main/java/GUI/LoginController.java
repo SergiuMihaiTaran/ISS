@@ -1,5 +1,6 @@
 package GUI;
 
+import Domain.TypeOfEmployee;
 import Domain.User;
 import Service.CompetitionsService;
 import Service.IServices;
@@ -9,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -45,13 +47,20 @@ public class LoginController  {
         this.competitionsService = competitionsService;
     }
 
+    @FXML
+    private ChoiceBox<String> typeChoiceBox;
 
+    @FXML
+    public void initialize() {
+        typeChoiceBox.getItems().addAll("developer", "tester");
+        typeChoiceBox.setValue("developer"); // default selection
+    }
     @FXML
     public void LoginPressed() throws IOException {
         String name = username.getText();
         String passwd = password.getText();
         System.out.println(name + " " + passwd);
-        User crtUser = new User(name, passwd,"");
+        User crtUser = new User(name, passwd,"", TypeOfEmployee.valueOf(typeChoiceBox.getValue()));
 
         try {
             showMainWindow(crtUser);
@@ -61,25 +70,47 @@ public class LoginController  {
 
         } catch (Exception e) {
             e.printStackTrace();
+            showAlert("User not found");
+            stage.close();
         }
     }
     private void showMainWindow(User user) throws Exception {
-        FXMLLoader mainLoader = new FXMLLoader(getClass().getClassLoader().getResource("main_window_view.fxml"));
-        Parent mainRoot = mainLoader.load();
-        MainWindowController mainWindowController=mainLoader.<MainWindowController>getController();
-        mainWindowController.setServer(server);
-        mainWindowController.setStage(stage);
+        if(user.getTypeOfEmployee().equals(TypeOfEmployee.tester)) {
+            FXMLLoader mainLoader = new FXMLLoader(getClass().getClassLoader().getResource("developer-view.fxml"));
+            Parent mainRoot = mainLoader.load();
+            developerController mainWindowController = mainLoader.<developerController>getController();
+            mainWindowController.setServer(server);
+            mainWindowController.setStage(stage);
 
-        MainWindowController mainController = mainLoader.getController();
-        mainController.setServer(server);
-        mainController.loadDataCompetitions();
-        mainController.init();
-        mainController.setUser(user);
-        stage.setScene(new Scene(mainRoot));
+            developerController mainController = mainLoader.getController();
+            mainController.setServer(server);
+            mainController.loadDataBugs();
+            mainController.init();
+            mainController.setUser(user);
+            stage.setScene(new Scene(mainRoot));
 
-        //mainWindowController.loadDataCompetitions();
-        stage.show();
-        this.setMainController(mainController);
+            //mainWindowController.loadDataCompetitions();
+            stage.show();
+            this.setMainController(mainController);
+        }
+        else{
+            FXMLLoader mainLoader = new FXMLLoader(getClass().getClassLoader().getResource("tester-view.fxml"));
+            Parent mainRoot = mainLoader.load();
+            testerController mainWindowController = mainLoader.<testerController>getController();
+            mainWindowController.setServer(server);
+            mainWindowController.setStage(stage);
+
+            testerController mainController = mainLoader.getController();
+            mainController.setServer(server);
+            mainController.loadDataBugs();
+            mainController.init();
+            mainController.setUser(user);
+            stage.setScene(new Scene(mainRoot));
+
+            //mainWindowController.loadDataCompetitions();
+            stage.show();
+            this.setMainController(mainController);
+        }
     }
     private void showAlert(String message) {
         // Show alert in case of errors or empty fields

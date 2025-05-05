@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="style.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.testerController">
+    <children>
+        <Label layoutX="269.0" layoutY="14.0" prefHeight="35.0" prefWidth="61.0" text="Bug list" />
+        <Label layoutX="154.0" layoutY="308.0" text="Name" />
+        <Label  layoutX="125.0" layoutY="343.0" text="Description" />
+        <TextField  fx:id="nameField"  layoutX="200.0" layoutY="304.0" />
+        <TextField fx:id="descriptionField" layoutX="200.0" layoutY="339.0" />
+        <TableView fx:id="bugTable" layoutX="89.0" layoutY="82.0" prefHeight="200.0" prefWidth="398.0">
+            <columns>
+                <TableColumn fx:id="name" prefWidth="75.0" text="C1" />
+                <TableColumn fx:id="description" prefWidth="322.40001525878904" text="C2" />
+            </columns>
+        </TableView>
+      <Button onAction="#reportBugClicked" layoutX="404.0" layoutY="312.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="82.0" text="Report Bug" />
+    </children>
+</AnchorPane>

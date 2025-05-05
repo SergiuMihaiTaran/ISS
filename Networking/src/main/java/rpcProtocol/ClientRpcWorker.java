@@ -1,8 +1,7 @@
 package rpcProtocol;
 
 
-import Domain.Competition;
-import Domain.Participant;
+import Domain.Bug;
 import Domain.User;
 import Service.IServices;
 import dto.DTOUtils;
@@ -76,10 +75,10 @@ public class ClientRpcWorker implements Runnable, IObserver {
     private Response handleRequest(Request request){
         Response response=null;
         if (request.type()== RequestType.LOGIN){
-            logger.debug("Login request ..."+request.type());
+
             UserDTO udto=(UserDTO)request.data();
             User user= DTOUtils.getFromDTO(udto);
-
+            logger.debug("Login request ..."+request.type()+user.toString());
             try {
                 server.login(user, this);
                 return okResponse;
@@ -102,28 +101,16 @@ public class ClientRpcWorker implements Runnable, IObserver {
                 return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
             }
         }
-        if (request.type()== RequestType.GET_COMPETITION_LIST) {
+        if (request.type()== RequestType.GET_BUG_LIST) {
             logger.debug("Get Comp List");
 
             try {
-                List<Competition> competitions = server.getCompetitionsList();
-                List<CompetitionDTO> competitionDTOS = DTOUtils.getDTO(competitions);
-                return new Response.Builder().type(ResponseType.GET_PARTICIPANT_LIST).data(competitionDTOS).build();
+                List<Bug> bugs = server.getBugsList();
+                List<BugDTO> competitionDTOS = DTOUtils.getDTOb(bugs);
+                return new Response.Builder().type(ResponseType.GET_BUG_LIST).data(competitionDTOS).build();
             } catch (Exception e) {
                 return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
             }
-        }
-            if (request.type()== RequestType.GET_PARTICIPANTS_IN_COMPETITION) {
-                logger.debug("Get Part List");
-                CompetitionDTO dto=(CompetitionDTO) request.data();
-                Competition comp=DTOUtils.getFromDTO(dto);
-                try {
-                    List<Participant> competitions = server.getParticipantsInCompetition(comp);
-                    List<ParticipantDTO> competitionDTOS = DTOUtils.getDTOp(competitions);
-                    return new Response.Builder().type(ResponseType.GET_PARTICIPANTS_IN_COMPETITION).data(competitionDTOS).build();
-                } catch (Exception e) {
-                    return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
-                }
         }
         if (request.type()== RequestType.LOGOUT) {
             logger.debug("Logout request");
@@ -139,13 +126,24 @@ public class ClientRpcWorker implements Runnable, IObserver {
                 return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
             }
         }
-        if (request.type()== RequestType.SAVE_PARTICIPANT) {
+        if (request.type()== RequestType.SAVE_BUG) {
             logger.debug("SAVE PART");
-            ParticipantDTO dto=(ParticipantDTO) request.data();
-            Participant participant=DTOUtils.getFromDTO(dto);
+            BugDTO dto=(BugDTO) request.data();
+            Bug bug=DTOUtils.getFromDTOb(dto);
             try {
-                server.saveParticipant(participant);
+                server.saveBug(bug);
                 return new Response.Builder().type(ResponseType.SAVED).build();
+            } catch (Exception e) {
+                return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
+            }
+        }
+        if (request.type()== RequestType.REMOVE_BUG) {
+            logger.debug("REMOVE PART");
+            BugDTO dto=(BugDTO) request.data();
+            Bug bug=DTOUtils.getFromDTOb(dto);
+            try {
+                server.removeBug(bug);
+                return new Response.Builder().type(ResponseType.REMOVED).build();
             } catch (Exception e) {
                 return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
             }

@@ -10,7 +10,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import rpcProtocol.ServicesRpcProxy;
+import protobuff.ProtoProxy;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class StartClient extends Application {
         logger.info("Using server IP " + serverIP);
         logger.info("Using server port " + serverPort);
 
-        IServices server = new ServicesRpcProxy(serverIP, serverPort);
+        IServices server = new ProtoProxy(serverIP, serverPort);
 
         FXMLLoader loader = new FXMLLoader(
                 getClass().getClassLoader().getResource("login-view.fxml"));

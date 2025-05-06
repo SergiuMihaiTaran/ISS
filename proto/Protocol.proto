@@ -1,0 +1,49 @@
+syntax="proto2";
+option java_package = "protobuff";
+option java_outer_classname = "Protobufs";
+
+message User{
+    required string name=1;
+    optional string password=2;
+    optional int32 id=3;
+}
+message Competition{
+  optional int32 id=1;
+  optional int32 distance=2;
+  optional int32 noParticipants=3;
+  optional string style=4;
+}
+message Participant{
+  optional int32 id=1;
+  optional int32 age=2;
+  optional string name=3;
+  repeated Competition competitions=4;
+}
+message Request {
+  enum Type {LOGIN=1; LOGOUT=2; GET_COMPETITION_LIST=3;GET_PARTICIPANTS_IN_COMPETITION=4;SAVE_PARTICIPANT=5;}
+
+  // Identifies which request is filled in.
+  required Type type = 1;
+
+  // One of the following will be filled in, depending on the type.
+  optional User user = 2;
+  optional Competition competition=3;
+  optional Participant participant=4;
+}
+
+message Response{
+   enum Type {  OK=1; ERROR=2; GET_PARTICIPANT_LIST=3;UPDATE=4;GET_PARTICIPANTS_IN_COMPETITION=5;SAVED=6;  }
+
+     // Identifies which request is filled in.
+     required Type type = 1;
+
+     // One of the following will be filled in, depending on the type.
+     optional string error = 2;
+     repeated Competition competitions=3;
+     optional User user=4 ;
+     repeated Participant participants=5;
+     optional Competition comp=6;
+     optional Participant part=7;
+
+
+}

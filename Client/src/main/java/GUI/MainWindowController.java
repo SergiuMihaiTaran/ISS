@@ -157,6 +157,7 @@ public class MainWindowController implements Initializable, IObserver {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+
             competitionTable.getItems().setAll(freshList);  // replace content with new instances
             competitionTable.refresh();  // force re-evaluation of cell factories
         });
